@@ -3,7 +3,7 @@
     "source": "functions"
   },
   "hosting": {
-    "public": "dist\\Kanban-fire",
+    "public": "dist/Kanban-fire",
     "ignore": [
       "firebase.json",
       "**/.*",
