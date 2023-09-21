@@ -1,19 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { Task } from './task/task';
+import { Component ,OnInit} from '@angular/core';
+import { Task } from '../task/task';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import {
   TaskDialogComponent,
   TaskDialogResult,
-} from './task-dialog/task-dialog.component';
+} from '../task-dialog/task-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import {
   AngularFirestore,
   AngularFirestoreCollection,
 } from '@angular/fire/firestore';
+
 import { BehaviorSubject } from 'rxjs';
-import { Router } from '@angular/router';
-import { BaseService } from './service/base.service';
+import { AuthService } from '../service/authService.service';
 const getObservable = (collection: AngularFirestoreCollection<Task>) => {
   const subject = new BehaviorSubject<Task[]>([]);
   collection.valueChanges({ idField: 'id' }).subscribe((val: Task[]) => {
@@ -23,33 +23,28 @@ const getObservable = (collection: AngularFirestoreCollection<Task>) => {
 };
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  selector: 'app-entry',
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss'],
 })
-export class AppComponent implements OnInit {
-  title = 'kanban-fire';
-  isLoggedIn = false;
+export class EntryComponent implements OnInit {
+  uniqueUserId = null ;
+  constructor(private dialog: MatDialog, private store: AngularFirestore, private auth:AuthService) {
+   
+  }
+  UserId = this.getId();
+  todo = getObservable(this.store.collection("users").doc(this.UserId).collection('todo')) as Observable<Task[]>;
+  inProgress = getObservable(this.store.collection("users").doc(this.UserId).collection('inProgress')) as Observable<Task[]>;
+  done = getObservable(this.store.collection("users").doc(this.UserId).collection('done')) as Observable<Task[]>;
 
-  constructor(
-    private dialog: MatDialog,
-    private store: AngularFirestore,
-    private router: Router,
-    private basicService: BaseService
-  ) {}
-
-  todo = getObservable(this.store.collection('todo')) as Observable<Task[]>;
-  inProgress = getObservable(this.store.collection('inProgress')) as Observable<
-    Task[]
-  >;
-  done = getObservable(this.store.collection('done')) as Observable<Task[]>;
-
-  ngOnInit() {
-    console.log(this.router.routerState.snapshot.url);
-    this.basicService.getisLoggedIn().subscribe(value=>{
-      this.isLoggedIn = value
+  getId(){
+    this.auth.getUniqueId().subscribe(id => {
+      this.uniqueUserId = id 
     })
+    return this.uniqueUserId;
+  }
 
+  ngOnInit(){
   }
 
   editTask(list: 'done' | 'todo' | 'inProgress', task: Task): void {
@@ -90,10 +85,11 @@ export class AppComponent implements OnInit {
     this.store.firestore.runTransaction(() => {
       const promise = Promise.all([
         this.store
+          .collection("users").doc(this.uniqueUserId)
           .collection(event.previousContainer?.id)
           .doc(item?.id)
           .delete(),
-        this.store.collection(event.container?.id).add(item),
+        this.store.collection("users").doc(this.uniqueUserId).collection(event.container?.id).add(item)
       ]);
       return promise;
     });
@@ -118,12 +114,7 @@ export class AppComponent implements OnInit {
         if (!result) {
           return;
         }
-        this.store.collection('todo').add(result.task);
+        this.store.collection("users").doc(this.uniqueUserId).collection('todo').add(result.task);
       });
-  }
-
-  logout() {
-    this.basicService.setisLoggedIn(false);
-    this.router.navigate(['/']);
   }
 }
