@@ -71,6 +71,10 @@
             "production": {
               "browserTarget": "kanban-fire:build:production"
             }
+          },
+          "headers": {
+            "Cross-Origin-Opener-Policy": "same-origin",
+            "Cross-Origin-Embedder-Policy": "require-corp"
           }
         },
         "extract-i18n": {
@@ -121,6 +125,10 @@
               "devServerTarget": "kanban-fire:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {}
         }
       }
     }

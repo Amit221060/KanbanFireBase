@@ -21,9 +21,16 @@ import { EntryComponent } from './dashboard/dashboard.component';
 import { AuthGuardService } from './service/authGuard.service';
 import { BaseService } from './service/base.service';
 import { AuthService } from './service/authService.service';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { verifyEmail } from './verifyEmail/verifyEmail.component';
+
+
+
+
 
 @NgModule({
-  declarations: [AppComponent, TaskComponent, TaskDialogComponent,LoginComponent,EntryComponent],
+  declarations: [AppComponent, TaskComponent, TaskDialogComponent,LoginComponent,EntryComponent,verifyEmail],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -39,8 +46,9 @@ import { AuthService } from './service/authService.service';
     AngularFirestoreModule,
     ReactiveFormsModule,
     AppRoutingModule,
+    AngularFireAuthModule
   ],
-  providers: [AuthGuardService,BaseService,AuthService],
+  providers: [AuthGuardService,BaseService,AuthService,AngularFireAuth],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

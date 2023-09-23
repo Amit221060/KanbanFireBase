@@ -1,7 +1,7 @@
 <mat-card *ngIf="issingnup =='login' ">
   <mat-card-title>Login</mat-card-title>
   <mat-card-content>
-    <form [formGroup]="form" (ngSubmit)="submit()">
+    <form [formGroup]="form" (ngSubmit)="login()">
       <p>
         <mat-form-field>
           <input
@@ -34,6 +34,12 @@
   <p style="text-align: center;"  (click)="manageSingnup('signup')">Don't have an Account :
     <a style="color:blueviolet; font-weight: 700; cursor: pointer;"> SignUp </a>
   </p>
+
+  <div class="button" style="display: block; text-align: center;">
+    <button style="text-align: center;" mat-raised-button color="primary" (click)="GoogleAuth()">Sign In WIth Google</button>
+  </div>
+
+ 
 </mat-card>
 
 
